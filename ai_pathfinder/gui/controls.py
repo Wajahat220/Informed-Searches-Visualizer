@@ -1,10 +1,4 @@
-# ─── gui/controls.py ─────────────────────────────────────────────────────────
-"""
-Left sidebar: all user-facing controls.
 
-Exposes a callback dictionary so window.py can wire up actions
-without this file needing to import window.py (avoids circular imports).
-"""
 
 from __future__ import annotations
 import tkinter as tk
@@ -22,7 +16,7 @@ class Sidebar(tk.Frame):
         self._cb  = callbacks
         self._build()
 
-    # ── build ─────────────────────────────────────────────────────────────
+    
     def _build(self):
         self._section("GRID SETTINGS")
         self._grid_controls()
@@ -33,22 +27,22 @@ class Sidebar(tk.Frame):
         self._section("ACTIONS")
         self._action_buttons()
 
-    # ── sections ──────────────────────────────────────────────────────────
+    
     def _section(self, text):
         tk.Label(self, text=text, bg=C.COLOR_ACCENT, fg=C.COLOR_SIDEBAR,
-                 font=("Consolas", 9, "bold"), anchor="w",
+                 font=("Verdana", 10, "bold"), anchor="w",
                  padx=8, pady=3).pack(fill=tk.X, pady=(8, 2))
 
     def _lbl(self, text):
         tk.Label(self, text=text, bg=C.COLOR_SIDEBAR, fg=C.COLOR_TEXT,
-                 font=("Consolas", 9), anchor="w").pack(
+                 font=("Verdana", 9,"bold"), anchor="w").pack(
                      fill=tk.X, padx=10, pady=(4, 0))
 
     def _btn(self, text, cmd, color=None):
         b = tk.Button(
             self, text=text, command=cmd,
             bg=color or C.COLOR_BUTTON, fg=C.COLOR_TEXT,
-            font=("Consolas", 9), relief=tk.FLAT,
+            font=("Verdana", 10,"bold"), relief=tk.FLAT,
             activebackground=C.COLOR_BTN_ACT,
             activeforeground=C.COLOR_TEXT,
             cursor="hand2", pady=5,
@@ -56,32 +50,32 @@ class Sidebar(tk.Frame):
         b.pack(fill=tk.X, padx=10, pady=2)
         return b
 
-    # ── grid settings ─────────────────────────────────────────────────────
+    
     def _grid_controls(self):
         row_frame = tk.Frame(self, bg=C.COLOR_SIDEBAR)
         row_frame.pack(fill=tk.X, padx=10, pady=2)
 
         tk.Label(row_frame, text="Rows:", bg=C.COLOR_SIDEBAR,
-                 fg=C.COLOR_TEXT, font=("Consolas", 9), width=6).pack(side=tk.LEFT)
+                 fg=C.COLOR_TEXT, font=("Verdana", 9,"bold"), width=6).pack(side=tk.LEFT)
         self.rows_var = tk.StringVar(value=str(C.DEFAULT_ROWS))
         tk.Entry(row_frame, textvariable=self.rows_var, width=5,
                  bg=C.COLOR_BUTTON, fg=C.COLOR_TEXT,
                  insertbackground=C.COLOR_TEXT,
-                 font=("Consolas", 9), relief=tk.FLAT).pack(side=tk.LEFT, padx=4)
+                 font=("Verdana", 9,"bold"), relief=tk.FLAT).pack(side=tk.LEFT, padx=4)
 
         col_frame = tk.Frame(self, bg=C.COLOR_SIDEBAR)
         col_frame.pack(fill=tk.X, padx=10, pady=2)
         tk.Label(col_frame, text="Cols:", bg=C.COLOR_SIDEBAR,
-                 fg=C.COLOR_TEXT, font=("Consolas", 9), width=6).pack(side=tk.LEFT)
+                 fg=C.COLOR_TEXT, font=("Verdana", 9,"bold"), width=6).pack(side=tk.LEFT)
         self.cols_var = tk.StringVar(value=str(C.DEFAULT_COLS))
         tk.Entry(col_frame, textvariable=self.cols_var, width=5,
                  bg=C.COLOR_BUTTON, fg=C.COLOR_TEXT,
                  insertbackground=C.COLOR_TEXT,
-                 font=("Consolas", 9), relief=tk.FLAT).pack(side=tk.LEFT, padx=4)
+                 font=("Verdana", 9,"bold"), relief=tk.FLAT).pack(side=tk.LEFT, padx=4)
 
-        self._btn("Create Grid", self._cb.get("create_grid"), C.COLOR_ACCENT)
+        self._btn("Create Grid", self._cb.get("create_grid"), "#00694B")
 
-    # ── map tools ─────────────────────────────────────────────────────────
+    
     def _map_tools(self):
         self._btn("Set Start",  lambda: self._cb["set_mode"]("start"))
         self._btn("Set Goal",   lambda: self._cb["set_mode"]("goal"))
@@ -100,14 +94,14 @@ class Sidebar(tk.Frame):
 
         self._btn("Generate Random Map", self._cb.get("random_map"))
 
-    # ── algorithm settings ────────────────────────────────────────────────
+    
     def _algo_settings(self):
         self._lbl("Algorithm:")
         self.algo_var = tk.StringVar(value="A*")
         ttk.Combobox(
             self, textvariable=self.algo_var,
             values=list(Planner.ALGORITHMS.keys()),
-            state="readonly", font=("Consolas", 9),
+            state="readonly", font=("Verdana", 9,"bold"),
         ).pack(fill=tk.X, padx=10, pady=2)
 
         self._lbl("Heuristic:")
@@ -115,7 +109,7 @@ class Sidebar(tk.Frame):
         ttk.Combobox(
             self, textvariable=self.heuristic_var,
             values=list(HEURISTICS.keys()),
-            state="readonly", font=("Consolas", 9),
+            state="readonly", font=("Verdana", 9,"bold"),
         ).pack(fill=tk.X, padx=10, pady=2)
 
         self.dynamic_var = tk.BooleanVar(value=False)
@@ -125,25 +119,38 @@ class Sidebar(tk.Frame):
             bg=C.COLOR_SIDEBAR, fg=C.COLOR_TEXT,
             selectcolor=C.COLOR_BUTTON,
             activebackground=C.COLOR_SIDEBAR,
-            font=("Consolas", 9),
+            font=("Verdana", 9,"bold"),
         ).pack(anchor="w", padx=10, pady=4)
 
-    # ── action buttons ────────────────────────────────────────────────────
+    
     def _action_buttons(self):
-        self._btn("▶  Start Search",  self._cb.get("start"),      "#a6e3a1")
-        self._btn("⟳  Clear Path",    self._cb.get("clear_path"))
-        self._btn("✕  Reset Grid",    self._cb.get("reset_grid"), "#f38ba8")
+        self._btn("▶  Start Search",  self._cb.get("start"),      "#064700")
+        self._btn("⟳  Clear Path",    self._cb.get("clear_path"), "#BDBD00")
+        self._btn("✕  Reset Grid",    self._cb.get("reset_grid"), "#540018")
 
-    # ── convenience getters ───────────────────────────────────────────────
     @property
     def rows(self) -> int:
-        try:    return max(3, int(self.rows_var.get()))
-        except: return C.DEFAULT_ROWS
+        try:
+            val = int(self.rows_var.get())
+            if val > 50:
+                tk.messagebox.showwarning("Limit Exceeded", "Maximum 50 rows allowed for performance.")
+                self.rows_var.set("50")
+                return 50
+            return max(3, val)
+        except:
+            return C.DEFAULT_ROWS
 
     @property
     def cols(self) -> int:
-        try:    return max(3, int(self.cols_var.get()))
-        except: return C.DEFAULT_COLS
+        try:
+            val = int(self.cols_var.get())
+            if val > 50:
+                tk.messagebox.showwarning("Limit Exceeded", "Maximum 50 columns allowed for performance.")
+                self.cols_var.set("50")
+                return 50
+            return max(3, val)
+        except:
+            return C.DEFAULT_COLS
 
     @property
     def density(self) -> float:

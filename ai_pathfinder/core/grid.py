@@ -1,9 +1,5 @@
-# ─── core/grid.py ────────────────────────────────────────────────────────────
-"""
-Grid – a 2-D array of Node objects.
 
-Responsibilities
-----------------
+"""
 * Create / resize the grid.
 * Provide neighbour lookup (4-directional).
 * Random obstacle generation.
@@ -26,7 +22,7 @@ class Grid:
         self.goal:  Node | None = None
         self._build()
 
-    # ── construction ─────────────────────────────────────────────────────
+    
     def _build(self):
         self.cells = [[Node(r, c) for c in range(self.cols)]
                       for r in range(self.rows)]
@@ -38,7 +34,7 @@ class Grid:
         self.cols = cols
         self._build()
 
-    # ── accessors ─────────────────────────────────────────────────────────
+    
     def node(self, row: int, col: int) -> Node:
         return self.cells[row][col]
 
@@ -55,7 +51,7 @@ class Grid:
                     result.append(nb)
         return result
 
-    # ── map editing ───────────────────────────────────────────────────────
+    
     def set_start(self, row: int, col: int):
         if self.start:
             self.start.state = Node.EMPTY
@@ -84,7 +80,7 @@ class Grid:
         if n.state == Node.EMPTY:
             n.state = Node.WALL
 
-    # ── random map ────────────────────────────────────────────────────────
+    
     def generate_random(self, density: float):
         """
         Fill grid randomly.  density is 0.0–1.0 fraction of cells to wall.
@@ -96,7 +92,7 @@ class Grid:
                 if random.random() < density:
                     self.cells[r][c].state = Node.WALL
 
-        # guaranteed start / goal in clear corners
+    
         sr, sc = 0, 0
         gr, gc = self.rows - 1, self.cols - 1
         self.cells[sr][sc].state = Node.EMPTY
@@ -104,14 +100,14 @@ class Grid:
         self.set_start(sr, sc)
         self.set_goal(gr, gc)
 
-    # ── resets ────────────────────────────────────────────────────────────
+    
     def clear_search(self):
         """Remove frontier/visited/path colouring; keep walls, start, goal."""
         for r in range(self.rows):
             for c in range(self.cols):
                 n = self.cells[r][c]
                 n.reset_search()
-        # restore start/goal colours
+    
         if self.start:
             self.start.state = Node.START
         if self.goal:
@@ -121,7 +117,7 @@ class Grid:
         """Wipe everything."""
         self._build()
 
-    # ── obstacle spawning (dynamic mode) ─────────────────────────────────
+    
     def spawn_obstacle(self, exclude: set[tuple[int, int]]) -> tuple[int, int] | None:
         """
         Place a wall on a random EMPTY cell not in *exclude*.

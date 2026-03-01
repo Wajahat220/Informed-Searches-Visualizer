@@ -1,4 +1,4 @@
-# ─── algorithms/heuristics.py ────────────────────────────────────────────────
+
 """
 All heuristic functions live here.
 
@@ -35,8 +35,7 @@ def euclidean(node: Node, goal: Node) -> float:
                      (node.col  - goal.col) ** 2)
 
 
-# ── Registry ──────────────────────────────────────────────────────────────────
-# Keys are shown in the GUI dropdown; values are the callables.
+
 HEURISTICS: dict[str, callable] = {
     "Manhattan": manhattan,
     "Euclidean": euclidean,

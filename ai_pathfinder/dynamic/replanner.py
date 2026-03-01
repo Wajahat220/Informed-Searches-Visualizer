@@ -1,9 +1,9 @@
-# ─── dynamic/replanner.py ────────────────────────────────────────────────────
+
 """
-DynamicController — orchestrates agent movement + obstacle spawning + re-planning.
+
 
 STATE MACHINE
--------------
+
 IDLE     → not started
 MOVING   → agent walking along current path
 DONE     → agent reached goal (or no path found)
@@ -43,7 +43,7 @@ class DynamicController:
         self.on_done:    callable | None = None   # (reached_goal: bool)
         self.on_wall:    callable | None = None   # (row, col)
 
-    # ── public API ───────────────────────────────────────────────────────
+    
     def start(self, initial_path: list[Node]):
         """Begin dynamic movement along *initial_path*."""
         if len(initial_path) < 2:
@@ -55,6 +55,17 @@ class DynamicController:
         self.replan_count   = 0
         self.state          = self.MOVING
 
+    def force_check_collision(self, row: int, col: int):
+        """Called by the GUI when a user manually places a wall."""
+        if self.state != self.MOVING:
+            return
+
+        # Check if the manual wall was placed on the path we planned to take
+        remaining_positions = {n.pos for n in self.path_remaining}
+        if (row, col) in remaining_positions:
+            print(f"Manual Wall detected at {row, col}! Replanning...")
+            self._do_replan()
+
     def step(self) -> bool:
         """
         Advance agent one step.
@@ -63,7 +74,7 @@ class DynamicController:
         if self.state != self.MOVING:
             return False
 
-        # ── 1. Advance agent ─────────────────────────────────────────────
+        
         if len(self.path_remaining) < 2:
             # Reached (or stuck at) last node
             self._finish(self.agent_node == self.grid.goal)

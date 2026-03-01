@@ -1,4 +1,4 @@
-# ─── core/planner.py ─────────────────────────────────────────────────────────
+
 """
 Planner — bridges the algorithms and the GUI.
 
@@ -26,29 +26,29 @@ class Planner:
 
     def __init__(self, grid: Grid):
         self.grid         = grid
-        self._gen         = None        # active step generator
+        self._gen         = None        
         self._heuristic   = None
         self._algo_name   = "A*"
 
-        # ── metrics ───────────────────────────────────────────────────────
+        
         self.nodes_visited = 0
         self.path_cost     = 0
         self.exec_time_ms  = 0.0
         self.path: list[Node] = []
 
-        # ── callbacks (set by GUI) ────────────────────────────────────────
-        self.on_step:     callable | None = None   # (current, open_set)
-        self.on_path:     callable | None = None   # (path)
-        self.on_no_path:  callable | None = None   # ()
+        
+        self.on_step:     callable | None = None   
+        self.on_path:     callable | None = None   
+        self.on_no_path:  callable | None = None   
 
         self._start_time: float = 0.0
 
-    # ── configuration ─────────────────────────────────────────────────────
+   
     def configure(self, algo_name: str, heuristic):
         self._algo_name = algo_name
         self._heuristic = heuristic
 
-    # ── animated search ───────────────────────────────────────────────────
+    
     def start_search(self):
         """Initialise the generator.  GUI calls step() on a timer."""
         if self._heuristic is None:
@@ -103,7 +103,7 @@ class Planner:
 
         return False
 
-    # ── instant re-plan (dynamic mode) ───────────────────────────────────
+    
     def instant_plan(self) -> list[Node]:
         """
         Run the selected algorithm instantly (no animation).

@@ -1,4 +1,4 @@
-# ─── core/node.py ────────────────────────────────────────────────────────────
+
 """
 A single cell in the search space.
 
@@ -15,7 +15,7 @@ from __future__ import annotations
 
 
 class Node:
-    # Cell state constants – stored on the node so the grid can colour it
+    
     EMPTY    = "empty"
     WALL     = "wall"
     START    = "start"
@@ -34,7 +34,7 @@ class Node:
         self.f      = float("inf")
         self.parent: Node | None = None
 
-    # ── comparison operators needed by heapq ─────────────────────────────
+    
     def __lt__(self, other: "Node") -> bool:
         return self.f < other.f
 
@@ -49,7 +49,7 @@ class Node:
     def __repr__(self) -> str:
         return f"Node({self.row},{self.col},g={self.g:.1f},h={self.h:.1f})"
 
-    # ── helpers ───────────────────────────────────────────────────────────
+    
     def reset_search(self):
         """Clear search state but keep wall/start/goal."""
         self.g      = float("inf")

@@ -1,4 +1,4 @@
-# ─── dynamic/obstacle_spawner.py ─────────────────────────────────────────────
+
 """
 ObstacleSpawner — randomly adds walls during agent movement.
 

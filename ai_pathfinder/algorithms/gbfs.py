@@ -1,4 +1,4 @@
-# ─── algorithms/gbfs.py ──────────────────────────────────────────────────────
+
 """
 Greedy Best-First Search (GBFS) — step-by-step generator version.
 

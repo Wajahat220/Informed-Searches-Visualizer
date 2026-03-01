@@ -1,4 +1,4 @@
-# ─── algorithms/astar.py ─────────────────────────────────────────────────────
+
 """
 A* Search — step-by-step generator version.
 
@@ -41,7 +41,9 @@ def astar(grid: Grid, heuristic) -> tuple[list[Node], int]:
     if start is None or goal is None:
         return [], 0
 
-    # ── initialise start node ────────────────────────────────────────────
+
+
+
     start.g = 0
     start.h = heuristic(start, goal)
     start.f = start.g + start.h
@@ -99,6 +101,8 @@ def astar_generator(grid: Grid, heuristic):
     if start is None or goal is None:
         yield ("no_path", [], 0)
         return
+        
+
 
     start.g = 0
     start.h = heuristic(start, goal)

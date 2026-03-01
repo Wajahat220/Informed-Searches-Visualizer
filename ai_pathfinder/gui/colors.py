@@ -1,5 +1,4 @@
-# ─── gui/colors.py ───────────────────────────────────────────────────────────
-"""Map Node states → canvas fill colours."""
+
 from core.node import Node
 import config as C
 

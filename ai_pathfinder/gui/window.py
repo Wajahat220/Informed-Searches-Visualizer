@@ -1,4 +1,4 @@
-# ─── gui/window.py ───────────────────────────────────────────────────────────
+
 """
 AppWindow — top-level Tk window.
 
@@ -30,35 +30,36 @@ class AppWindow:
         root.configure(bg=C.COLOR_BG)
         root.resizable(True, True)
 
-        # ── Model ─────────────────────────────────────────────────────────
+        
         self.grid    = Grid(C.DEFAULT_ROWS, C.DEFAULT_COLS)
         self.planner = Planner(self.grid)
         self.dyn     = DynamicController(self.grid, self.planner)
 
-        # ── Layout ────────────────────────────────────────────────────────
+        
         self._build_layout()
 
-        # ── Wire planner callbacks ────────────────────────────────────────
+        
         self.planner.on_step    = self._on_search_step
         self.planner.on_path    = self._on_path_found
         self.planner.on_no_path = self._on_no_path
 
-        # ── Wire dynamic callbacks ─────────────────────────────────────────
+        
         self.dyn.on_move   = self._on_agent_move
         self.dyn.on_replan = self._on_replan
         self.dyn.on_done   = self._on_dynamic_done
         self.dyn.on_wall   = self._on_new_wall
 
-        # ── State flags ───────────────────────────────────────────────────
+        
         self._searching   = False
         self._moving      = False
         self._search_path: list[Node] = []
 
-        # Initial grid draw
+        
         self._create_grid()
 
-    # ── layout ────────────────────────────────────────────────────────────
+    
     def _build_layout(self):
+        # 1. Define the commands that the sidebar buttons will trigger
         callbacks = {
             "create_grid": self._create_grid,
             "set_mode":    self._set_draw_mode,
@@ -68,26 +69,29 @@ class AppWindow:
             "reset_grid":  self._reset_grid,
         }
 
-        # Sidebar (left)
+        # 2. Setup the Sidebar (Left) with the updated padding for a modern look
         self.sidebar = Sidebar(self.root, callbacks)
-        self.sidebar.pack(side=tk.LEFT, fill=tk.Y)
+        self.sidebar.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
 
-        # Right side: canvas + metrics
+        # 3. Setup the Right side container for the grid and the metrics
         right = tk.Frame(self.root, bg=C.COLOR_BG)
         right.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Canvas area (scrollable for large grids)
+        # 4. Create the frame that holds the canvas (grid)
         canvas_frame = tk.Frame(right, bg=C.COLOR_BG)
         canvas_frame.pack(fill=tk.BOTH, expand=True)
 
+        # 5. Initialize the Visualizer and wire the "Manual Click" to our logic
         self.vis = Visualizer(canvas_frame)
+        
+        # This is the most important line: it tells the vis to run _on_new_wall when you click
+        self.vis.on_manual_wall = self._on_new_wall
 
-        # Metrics bar (bottom)
+        # 6. Setup the Metrics Panel (Bottom) to show time, cost, and visited nodes
         self.metrics = MetricsPanel(right)
         self.metrics.pack(fill=tk.X, side=tk.BOTTOM)
         self.metrics.reset()
-
-    # ── grid creation ─────────────────────────────────────────────────────
+    
     def _create_grid(self):
         rows = self.sidebar.rows
         cols = self.sidebar.cols
@@ -99,11 +103,11 @@ class AppWindow:
         self._searching = False
         self._moving    = False
 
-    # ── draw mode ─────────────────────────────────────────────────────────
+    
     def _set_draw_mode(self, mode: str):
         self.vis.set_draw_mode(mode)
 
-    # ── random map ────────────────────────────────────────────────────────
+    
     def _random_map(self):
         self._stop_animations()
         density = self.sidebar.density
@@ -111,7 +115,7 @@ class AppWindow:
         self.vis.refresh_all()
         self.metrics.reset()
 
-    # ── start search ──────────────────────────────────────────────────────
+    
     def _start(self):
         if self._searching or self._moving:
             return
@@ -135,7 +139,7 @@ class AppWindow:
         else:
             self._start_static()
 
-    # ── STATIC mode ───────────────────────────────────────────────────────
+    
     def _start_static(self):
         self.metrics._status.config(text="Searching…")
         self._searching = True
@@ -181,7 +185,7 @@ class AppWindow:
         self.metrics._status.config(text="No Path ✗")
         messagebox.showinfo("No Path", "No path found between start and goal.")
 
-    # ── DYNAMIC mode ──────────────────────────────────────────────────────
+    
     def _start_dynamic(self):
         """First find initial path instantly, then animate movement."""
         self.metrics._status.config(text="Planning…")
@@ -191,7 +195,7 @@ class AppWindow:
             messagebox.showinfo("No Path", "No initial path found.")
             return
 
-        # Show initial path briefly
+        
         for n in path:
             if n.state not in (Node.START, Node.GOAL):
                 n.state = Node.PATH
@@ -229,7 +233,11 @@ class AppWindow:
         self.metrics._time .config(text=f"{self.planner.exec_time_ms:.1f}")
 
     def _on_new_wall(self, row: int, col: int):
-        pass   # wall already set on node; refresh_all repaints it
+        # Tell the dynamic controller a new wall exists
+        # This will trigger the replan if it's in the agent's path
+        if self._moving:
+            self.dyn.force_check_collision(row, col)
+        self.vis.refresh_all()
 
     def _on_dynamic_done(self, success: bool):
         self._moving = False
@@ -240,7 +248,7 @@ class AppWindow:
             messagebox.showinfo("Dynamic Mode",
                 "Agent is blocked — no path to goal remains.")
 
-    # ── clear / reset ─────────────────────────────────────────────────────
+    
     def _clear_path(self):
         self._stop_animations()
         self.grid.clear_search()
